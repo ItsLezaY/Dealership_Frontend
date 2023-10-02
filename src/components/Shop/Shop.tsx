@@ -1,10 +1,107 @@
-import React from 'react';
+import * as _React  from 'react'; 
+import { useState }  from 'react';
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogContentText,
+    Stack,
+    Typography,
+    Snackbar,
+    Alert } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';   
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Grid from "@mui/material/Grid";
+import InfoIcon from '@mui/icons-material/Info';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { getDatabase, ref, push } from 'firebase/database'; 
 
+//internal imports
 import { NavBar } from '../sharedComponents';
+import { theme } from '../../Theme/themes';
+import { useGetShop, ShopState } from '../../customHooks';
+import { InputText } from '../sharedComponents';
+import { MessageType } from '../Auth';
+
+export const shopStyles = {
+    main: {
+        backgroundColor: theme.palette.secondary.main,
+        height: '100%',
+        width: '100%',
+        color: 'white',
+        backgroundSize: 'cover',
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        backgroundAttachment: 'fixed',
+        position: 'absolute',
+        overflow: 'auto',
+        paddingBottom: '100px'
+    },
+    grid: {
+        marginTop: '25px', 
+        marginRight: 'auto', 
+        marginLeft: 'auto', 
+        width: '70vw'
+    },
+    card: {
+        width: "300px", 
+        padding: '10px',
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: theme.palette.secondary.light,
+        border: '2px solid',
+        borderColor: theme.palette.primary.main,
+        borderRadius: '10px'
+    },
+    cardMedia: {
+        width: '95%',
+        margin: 'auto',
+        marginTop: '5px',
+        aspectRatio: '1/1',
+        border: '1px solid',
+        borderColor: theme.palette.primary.main,
+        borderRadius: '10px'
+    },
+    button: {
+        color: 'white', 
+        borderRadius: '50px',
+        height: '45px',
+        width: '250px',
+        marginTop: '10px'
+    },
+    stack: {
+        width: '75%', 
+        marginLeft: 'auto', 
+        marginRight: 'auto'
+    },
+    stack2: {
+        border: '1px solid', 
+        borderColor: theme.palette.primary.main, 
+        borderRadius: '50px', 
+        width: '100%',
+        marginTop: '10px'
+    },
+    typography: { 
+        marginLeft: '15vw', 
+        color: "white", 
+        marginTop: '100px'
+    }
+}
+
+export interface SubmitState {
+    quantity: string
+}
 
 
 
 export const Shop = () => {
+    const { shopData } = useGetShop();
+    console.log(shopData)
     return (
         <div>
             <NavBar />

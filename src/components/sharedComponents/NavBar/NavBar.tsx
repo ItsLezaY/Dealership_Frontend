@@ -19,12 +19,15 @@ import HomeIcon from '@mui/icons-material/Home';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import { signOut, getAuth } from 'firebase/auth'
 
 
 // internal imports 
 import { theme } from '../../../Theme/themes'; 
 
 
+// buiding a CSS object 
 
 const drawerWidth = 200; 
 
@@ -33,18 +36,18 @@ const navStyles = {
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen 
-        })
+        }),
     },
     appBarShift: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
         transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen
-        })
+            easing: theme.transitions.easing.easeOut, 
+            duration: theme.transitions.duration.enteringScreen 
+        }),
     },
     menuButton: {
-        marginRight: theme.spacing(2)
+        marginRight: theme.spacing(2) 
     },
     hide: {
         display: 'none'
@@ -61,18 +64,18 @@ const navStyles = {
         width: drawerWidth,
         alignItems: 'center',
         padding: theme.spacing(0, 1),
-        ...theme.mixins.toolbar,
+        ...theme.mixins.toolbar, 
         justifyContent: 'flex-end'
     },
     content: {
-        transition: theme.transitions.create('margin', {
+        transition: theme.transitions.create('margin', { 
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen
         }),
         marginLeft: 0
     },
     contentShift: {
-        transition: theme.transitions.create('margin', {
+        transition: theme.transitions.create('margin', { 
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen
         }),
@@ -83,7 +86,7 @@ const navStyles = {
     },
     toolbarButton: {
         marginLeft: 'auto',
-        backgroundColor: theme.palette.primary.contrastText
+        color: theme.palette.primary.contrastText
     },
     signInStack: {
         position: 'absolute', 
@@ -93,9 +96,13 @@ const navStyles = {
 }
 
 
+// build out our NavBar Component
 export const NavBar = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
     const [ open, setOpen ] = useState(false); 
+    const myAuth = localStorage.getItem('auth') 
+    const auth = getAuth()
+
 
 
     const handleDrawerOpen = () => {
@@ -113,16 +120,35 @@ export const NavBar = () => {
             onClick: () => {navigate('/')}
         },
         {
-            text: 'Shop',
-            icon: <ShoppingBagIcon />,
-            onClick: () => {navigate('/shop')}
+            text: myAuth === 'true' ? 'Shop' : 'Sign In',
+            icon: myAuth === 'true' ? <ShoppingBagIcon /> : <AssignmentIndIcon />,
+            onClick: () => {navigate(myAuth === 'true' ? '/shop' : '/auth')}
         },
         {
-            text: 'Cart',
-            icon: <ShoppingCartIcon />,
-            onClick: () => {navigate('/cart')}
+            text: myAuth === 'true' ? 'Cart' : '',
+            icon: myAuth === 'true' ?  <ShoppingCartIcon /> : '',
+            onClick: myAuth === 'true' ? () => {navigate('/cart')} : () => {}
         },
     ]
+
+
+    let signInText = 'Sign In'
+
+    if (myAuth === 'true'){
+        signInText = 'Sign Out'
+    }
+
+    const signInButton = async () => {
+        if (myAuth === 'false'){
+            navigate('/auth')
+        } else {
+            await signOut(auth)
+            localStorage.setItem('auth', 'false')
+            localStorage.setItem('token', '')
+            localStorage.setItem('user', '')
+            navigate('/')
+        }
+    }
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -144,15 +170,17 @@ export const NavBar = () => {
                 </Toolbar>
                 <Stack direction='row' justifyContent='space-between' alignItems='center' sx={ navStyles.signInStack }>
                     <Typography variant='body2' sx={{color: 'inherit'}}>
+                        {/* come back and add user email */}
+                        {localStorage.getItem('user')}
                     </Typography>
                     <Button 
-                        variant = 'outlined'
+                        variant = 'contained'
                         color = 'info'
                         size = 'large'
                         sx = {{ marginLeft: '20px'}}
-                        onClick = { () => {navigate('/auth')}}
+                        onClick = { signInButton }
                         >
-                        Sign In
+                        { signInText }
                     </Button>
                 </Stack>
             </AppBar>
@@ -170,6 +198,7 @@ export const NavBar = () => {
                 <Divider />
                 <List>
                     { navLinks.map((item) => {
+
                         const { text, icon, onClick } = item; 
                         return (
                             <ListItemButton key={text} onClick={onClick}>

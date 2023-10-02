@@ -47,7 +47,7 @@ export const Home = (props: Props) => {
             <Main>
                 <MainText>
                     <h1> {props.title} </h1>
-                    <Button sx = {{ marginTop: '10px '}} component={Link} to={'/'} variant='contained'>View Inventory</Button>
+                    <Button sx = {{ marginTop: '10px '}} component={Link} to={localStorage.getItem('auth') === 'true' ? '/shop' : '/auth'} variant='contained'>View Our Inventory</Button>
                 </MainText>
             </Main>
         </Root>
